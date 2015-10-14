@@ -42,4 +42,4 @@ int main(void)
 	}
 }
 
-/* vim: ci ts=8 sts=8 */
+/* vim: set cindent ts=8 sts=8 */
