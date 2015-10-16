@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <sys/types.h>
@@ -33,13 +32,20 @@ int timespec_substract(struct timespec *result, struct timespec *x, struct times
 
 int main(void)
 {
-	int msgq_id;
+	int msgq_id, logq_id;
 	struct rt_msgbuf shmem_msg;
-	struct timespec ts_now, timediff;
+	struct rt_logbuf shmem_msg_log;
+	struct timespec ts_now;
 
 	msgq_id = msgget(MSGQ_KEY, IPC_CREAT | 0660);
 	if (msgq_id < 0) {
 		perror("error attaching the IPC message queue");
+		return 1;
+	}
+
+	logq_id = msgget(LOGQ_KEY, IPC_CREAT | 0660);
+	if (msgq_id < 0) {
+		perror("error attaching logging message queue");
 		return 1;
 	}
 
@@ -56,10 +62,15 @@ int main(void)
 		if (ret < 0)
 			perror("error upon clock_gettime");
 
-		ret = timespec_substract(&timediff, &ts_now, &shmem_msg.recv_ts);
+		shmem_msg_log.mtype = MSGQ_MSG_LOG;
+		shmem_msg_log.negative = timespec_substract(&shmem_msg_log.timediff,
+				&ts_now, &shmem_msg.recv_ts);
 
-		/* TODO pass the result on to logging process */
-		printf("%s%d.%09d\n", ret ? "-" : "", timediff.tv_sec, timediff.tv_nsec);
+		ret = msgsnd(logq_id, (struct msgbuf *)&shmem_msg_log,
+				sizeof(shmem_msg_log) - sizeof(shmem_msg_log.mtype),
+				IPC_NOWAIT);
+		if (ret < 0)
+			perror("error upon log message send");
 	}
 }
 
