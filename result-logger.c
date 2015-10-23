@@ -7,7 +7,7 @@
 
 int main(void)
 {
-	int logq_id;
+	int logq_id, cntr;
 	struct rt_logbuf shmem_msg_log;
 
 	logq_id = msgget(LOGQ_KEY, IPC_CREAT | 0660);
@@ -16,7 +16,7 @@ int main(void)
 		return 1;
 	}
 
-	for(;;) {
+	for (cntr = 0;; cntr++) {
 		int ret;
 
 		/* we take any message from the queue regardless its length */
@@ -26,9 +26,10 @@ int main(void)
 		if (ret < 0)
 			perror("error upon IPC message receive");
 
-		printf("%s%d.%09d\n", shmem_msg_log.negative ? "-" : "",
-				shmem_msg_log.timediff.tv_sec,
-				shmem_msg_log.timediff.tv_nsec);
+		printf("\t0:\t%d:\t%s%d.%03d\n", cntr, shmem_msg_log.negative ? "-" : "",
+				shmem_msg_log.timediff.tv_sec * 1000000UL +
+				shmem_msg_log.timediff.tv_nsec / 1000,
+				shmem_msg_log.timediff.tv_nsec % 1000);
 	}
 }
 
