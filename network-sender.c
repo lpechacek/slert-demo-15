@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 #include <netinet/in.h>
 #include <netinet/udp.h>
 #include <sys/ipc.h>
@@ -17,6 +18,7 @@
 
 int main(int argc, char **argv)
 {
+	int opt, count, max_count = 0;
 	int udp_socket, ret;
 	struct addrinfo *result;
 	struct addrinfo resolver_hints = {
@@ -29,12 +31,22 @@ int main(int argc, char **argv)
 
 	assert(UDP_MSG_SIZE > sizeof(struct timespec));
 
-	if (argc < 1) {
+	while ((opt = getopt(argc, argv, "n:")) != -1) {
+		switch (opt) {
+			case 'n':
+				max_count = atoi(optarg);
+				break;
+			default:
+				return 1;
+		}
+	}
+
+	if (!argv[optind]) {
 		fputs("need target address as first parameter", stderr);
 		return 1;
 	}
 	
-	ret = getaddrinfo(argv[1], xstr(UDP_PORT), &resolver_hints, &result);
+	ret = getaddrinfo(argv[optind], xstr(UDP_PORT), &resolver_hints, &result);
 	if (ret != 0) {
 		if (ret == EAI_SYSTEM) {
 			perror("getaddrinfo");
@@ -58,7 +70,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	for(;;) {
+	for(count = 0; !max_count || count < max_count; count++) {
 		ret = clock_gettime(CLOCK_MONOTONIC, (struct timespec *)&udp_msg_buffer);
 		if (ret < 0)
 			perror("error upon clock_gettime");
