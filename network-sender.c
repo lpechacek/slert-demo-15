@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 	}
 
 	if (!argv[optind]) {
-		fputs("need target address as first parameter", stderr);
+		fputs("need target address as first parameter\n", stderr);
 		return 1;
 	}
 	
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
 	}
 
 	if (result->ai_next)
-		fputs("more than one address records found, using the first one", stderr);
+		fputs("more than one address records found, using the first one\n", stderr);
 
 	if (connect(udp_socket, result->ai_addr, result->ai_addrlen)) {
 		perror("error connecting udp socket");
