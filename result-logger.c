@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdio.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
@@ -23,7 +24,7 @@ int main(void)
 		ret = msgrcv(logq_id, (struct msgbuf *)&shmem_msg_log,
 				sizeof(shmem_msg_log) - sizeof(shmem_msg_log.mtype),
 				0, MSG_NOERROR);
-		if (ret < 0)
+		if (ret < 0 && errno != EINTR)
 			perror("error upon IPC message receive");
 
 		printf("\t0:\t%d:\t%s%d.%03d\n", cntr, shmem_msg_log.negative ? "-" : "",
