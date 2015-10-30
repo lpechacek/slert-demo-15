@@ -16,9 +16,12 @@ if test -z "$1" -o -z "$2"; then
   exit 1
 fi
 
-./network-listener &
+# define useful FS paths
+PROG_PATH=$(dirname "$0")
+
+$PROG_PATH/network-listener &
 LISTENER_PID=$!
-./message-processor &
+$PROG_PATH/message-processor &
 PROCESSOR_PID=$!
 echo "LISTENER_PID: $LISTENER_PID"
 echo "PROCESSOR_PID: $PROCESSOR_PID"
@@ -29,4 +32,4 @@ taskset -cp "$2" $PROCESSOR_PID
 
 trap "kill $LISTENER_PID; kill $PROCESSOR_PID" EXIT
 
-./result-logger
+$PROG_PATH/result-logger
