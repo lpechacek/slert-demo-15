@@ -1,6 +1,6 @@
 CFLAGS=-g
 
-all: network-sender network-listener message-processor result-logger
+all: network-sender network-listener message-processor noise-maker result-logger
 
 %.o: %.c $(HEADERS)
 	gcc $(CFLAGS) -c $< -o $@
@@ -13,6 +13,9 @@ network-listener: network-listener.o shared_defs.h
 
 message-processor: message-processor.o shared_defs.h
 	gcc $(CFLAGS) message-processor.o -o $@
+
+noise-maker: noise-maker.o shared_defs.h
+	gcc $(CFLAGS) noise-maker.o -o $@
 
 result-logger: result-logger.o
 	gcc $(CFLAGS) result-logger.o -o $@

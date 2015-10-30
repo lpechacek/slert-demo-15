@@ -9,6 +9,8 @@
 #define LOGQ_KEY 0x45535553L
 #define MSGQ_MSG_LOG 1
 
+#define DFL_FILE_SIZE (512<<20)
+
 struct rt_msgbuf {
 	long mtype;
 	struct timespec snd_ts;
