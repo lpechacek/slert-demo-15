@@ -21,8 +21,10 @@ PROG_PATH=$(dirname "$0")
 
 $PROG_PATH/network-listener &
 LISTENER_PID=$!
+EXIT_TRAP_CMD="kill $LISTENER_PID;"
 chrt 20 $PROG_PATH/message-processor &
 PROCESSOR_PID=$!
+EXIT_TRAP_CMD+="kill $PROCESSOR_PID;"
 echo "LISTENER_PID: $LISTENER_PID"
 echo "PROCESSOR_PID: $PROCESSOR_PID"
 cset proc -m "$LISTENER_PID" user
@@ -30,6 +32,6 @@ taskset -cp "$1" $LISTENER_PID
 cset proc -m "$PROCESSOR_PID" user
 taskset -cp "$2" $PROCESSOR_PID
 
-trap "kill $LISTENER_PID; kill $PROCESSOR_PID" EXIT
+trap "$EXIT_TRAP_CMD" EXIT
 
 $PROG_PATH/result-logger
