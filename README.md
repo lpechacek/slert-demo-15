@@ -33,3 +33,9 @@ Run the test
   on another machine to send 20 batches of 50 messages to the demo system
 * oscilloscope -nm 50 < /dev/shm/test-results
   to replay the results
+
+Running the tests with simulated contention
+-------------------------------------------
+* supply -c option to run_processor.sh; it runs noise-maker on the same CPU as
+  message-processor and instructs message-processor to perform additional
+  operations on a file shared with noise-maker as part of the processing
