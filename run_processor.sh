@@ -21,7 +21,7 @@ PROG_PATH=$(dirname "$0")
 
 $PROG_PATH/network-listener &
 LISTENER_PID=$!
-$PROG_PATH/message-processor &
+chrt 20 $PROG_PATH/message-processor &
 PROCESSOR_PID=$!
 echo "LISTENER_PID: $LISTENER_PID"
 echo "PROCESSOR_PID: $PROCESSOR_PID"
